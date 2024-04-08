@@ -25,7 +25,7 @@
         margin-bottom: 5px;
     }
     input[type="text"], input[type="number"] {
-        width: 100%;
+        width: 95%;
         padding: 8px;
         margin-bottom: 10px;
     }
@@ -51,23 +51,26 @@
     <label for="referee">Referee Name:</label>
     <input type="text" id="referee" placeholder="Enter referee's name">
     
-<!--     <label for="gameSelect">Select Game:</label>
+    <!-- <label for="gameSelect">Select Game:</label>
     <select id="gameSelect">
         <option value="snooker">Snooker</option>
-    </select>
- -->
+    </select> -->
+
     <label for="numPlayers">Number of Players:</label>
     <input type="number" id="numPlayers" min="1" placeholder="Enter number of players">
     <button id="enterPlayersBtn">Enter</button> <!-- New button for mobile users -->
+    <h2>Score</h2>
     <div class="players-container"></div>
 
     <!-- <h2>Customize Shoot Order</h2>
     <p>(Enter player names in the order you want them to shoot)</p>
     <div id="shootOrder"></div> -->
 
-    <h2>Score</h2>
     <div id="scoreContainer" class="score-container"></div>
+
+    <hr/>
     <div id="currentPlayerIndicator" class="score-container"></div>
+    <hr/>
 
     <button onclick="addPoint('Red')">Red</button>
     <button onclick="addPoint('Yellow')">Yellow</button>
@@ -113,6 +116,7 @@
             currentPlayerScore.score += getColorValue(color); // Add color value to player score
             updateTotalPoints();
             updateScore();
+            // console.log(playerScores);
         }
 
         function addFoul() {
