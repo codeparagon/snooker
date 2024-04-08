@@ -206,11 +206,15 @@
             players = [];
             playerScores = []; // Reset player scores
             for (let i = 0; i < numPlayers; i++) {
-                const playerName = prompt(`Enter name for Player ${i + 1}:`);
-                addPlayer(playerName || `Player ${i + 1}`);
+                let playerName = prompt(`Enter name for Player ${i + 1}:`);
+                if (!playerName) {
+                    playerName = `Player ${i + 1}`;
+                }
+                addPlayer(playerName);
             }
             updateCurrentPlayerIndicator();
         }
+
         document.getElementById('numPlayers').addEventListener('change', (event) => {
             addPlayerNamesPrompt();
         });
