@@ -1,47 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snooker Score Counter</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        h1, h2 {
-            text-align: center;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input[type="text"], input[type="number"] {
-            width: 95%;
-            padding: 8px;
-            margin-bottom: 10px;
-        }
-        button {
-            padding: 10px 20px;
-            margin-right: 10px;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-        .players-container {
-            margin-bottom: 20px;
-        }
-        .score-container {
-            text-align: center;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snooker Score Counter</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    h1, h2 {
+        text-align: center;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    input[type="text"], input[type="number"] {
+        width: 95%;
+        padding: 8px;
+        margin-bottom: 10px;
+    }
+    button {
+        padding: 10px 20px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        cursor: pointer;
+    }
+    .players-container {
+        margin-bottom: 20px;
+    }
+    .score-container {
+        text-align: center;
+    }
+</style>
 </head>
 <body>
 
@@ -50,14 +50,22 @@
     
     <label for="referee">Referee Name:</label>
     <input type="text" id="referee" placeholder="Enter referee's name">
+    
+    <!-- <label for="gameSelect">Select Game:</label>
+    <select id="gameSelect">
+        <option value="snooker">Snooker</option>
+    </select> -->
 
     <label for="numPlayers">Number of Players:</label>
     <input type="number" id="numPlayers" min="1" placeholder="Enter number of players">
     <button id="enterPlayersBtn">Enter</button> <!-- New button for mobile users -->
-    
     <h2>Score</h2>
     <div class="players-container"></div>
-    
+
+    <!-- <h2>Customize Shoot Order</h2>
+    <p>(Enter player names in the order you want them to shoot)</p>
+    <div id="shootOrder"></div> -->
+
     <div id="scoreContainer" class="score-container"></div>
 
     <hr/>
@@ -74,122 +82,148 @@
     <button onclick="addFoul()">Foul</button>
     <button onclick="addCustomPoint()">Custom Point</button>
     <button onclick="passTurn()">Pass Turn</button>
+    <button onclick="customizeOrder()">Customize Order</button>
     <button onclick="endGame()">End Game</button>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let players = [];
-            let currentPlayerIndex = 0;
-            let playerScores = []; // Stores individual player scores as an array of objects
+        let players = [];
+        let currentPlayerIndex = 0;
+        let playerScores = []; // Stores individual player scores as an array of objects
 
-            function addPlayer(name) {
-                players.push(name);
-                playerScores.push({ id: name, score: 0 }); // Initialize player score to 0
-                renderPlayers();
-                updateScore(); // Update score when adding player
-            }
+        function addPlayer(name) {
+            players.push(name);
+            playerScores.push({ id: name, score: 0 }); // Initialize player score to 0
+            renderPlayers();
+            updateScore(); // Update score when adding player
+        }
 
-            function renderPlayers() {
-                const playersContainer = document.querySelector('.players-container');
-                playersContainer.innerHTML = '';
-                players.forEach(player => {
-                    const playerDiv = document.createElement('div');
-                    playerDiv.textContent = player + ": 0";
-                    if (players[currentPlayerIndex] === player) {
-                        playerDiv.style.fontWeight = 'bold';
-                    }
-                    playersContainer.appendChild(playerDiv);
-                });
-            }
-
-            function addPoint(color) {
-                const currentPlayer = players[currentPlayerIndex];
-                const currentPlayerScore = playerScores.find(player => player.id === currentPlayer);
-                currentPlayerScore.score += getColorValue(color); // Add color value to player score
-                updateScore();
-            }
-
-            function addFoul() {
-                const currentPlayer = players[currentPlayerIndex];
-                const currentPlayerScore = playerScores.find(player => player.id === currentPlayer);
-                const foulValue = parseInt(prompt(`Enter foul value for ${currentPlayer}:`) || 4); // Default foul value to 4 if not provided
-                currentPlayerScore.score -= foulValue; // Subtract foul value from player score
-                updateScore();
-            }
-
-            function addCustomPoint() {
-                const currentPlayer = players[currentPlayerIndex];
-                const currentPlayerScore = playerScores.find(player => player.id === currentPlayer);
-                const scoreValue = parseInt(prompt(`Enter score value for ${currentPlayer}:`) || 0); // Default score value to 0 if not provided
-                currentPlayerScore.score += scoreValue; // Add custom score value to player score
-                updateScore();
-            }
-
-            function getColorValue(color) {
-                const colorValues = {
-                    'Red': 1,
-                    'Yellow': 2,
-                    'Green': 3,
-                    'Brown': 4,
-                    'Blue': 5,
-                    'Pink': 6,
-                    'Black': 7
-                };
-                return colorValues[color] || 0; // Return 0 if color not found
-            }
-
-            function passTurn() {
-                currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-                renderPlayers();
-                updateCurrentPlayerIndicator();
-            }
-
-            function updateScore() {
-                playerScores.forEach((player, index) => {
-                    const scoreElement = document.querySelector('.players-container').children[index];
-                    scoreElement.textContent = `${player.id}: ${player.score}`;
-                });
-            }
-
-            function endGame() {
-                let winner = '';
-                let maxScore = -Infinity;
-                playerScores.forEach(player => {
-                    if (player.score > maxScore) {
-                        maxScore = player.score;
-                        winner = player.id;
-                    }
-                });
-                alert(`Game ended!\nWinner: ${winner}\nTotal points: ${maxScore}`);
-            }
-
-            function updateCurrentPlayerIndicator() {
-                const indicator = document.getElementById('currentPlayerIndicator');
-                indicator.innerHTML = `Current Player: ${players[currentPlayerIndex]}`;
-            }
-
-            function addPlayerNamesPrompt() {
-                const numPlayers = parseInt(document.getElementById('numPlayers').value);
-                if (isNaN(numPlayers) || numPlayers < 1) {
-                    alert("Please enter a valid number of players.");
-                    return;
+        function renderPlayers() {
+            const playersContainer = document.querySelector('.players-container');
+            playersContainer.innerHTML = '';
+            players.forEach(player => {
+                const playerDiv = document.createElement('div');
+                playerDiv.textContent = player + ": 0";
+                if (players[currentPlayerIndex] === player) {
+                    playerDiv.style.fontWeight = 'bold';
                 }
-                players = [];
-                playerScores = []; // Reset player scores
-                for (let i = 0; i < numPlayers; i++) {
-                    let playerName = prompt(`Enter name for Player ${i + 1}:`);
-                    if (!playerName) {
-                        playerName = `Player ${i + 1}`;
-                    }
-                    addPlayer(playerName);
-                }
-                updateCurrentPlayerIndicator();
-            }
+                playersContainer.appendChild(playerDiv);
+            });
+        }
 
-            document.getElementById('enterPlayersBtn').addEventListener('click', addPlayerNamesPrompt);
+        function addPoint(color) {
+            const currentPlayer = players[currentPlayerIndex];
+            const currentPlayerScore = playerScores.find(player => player.id === currentPlayer);
+            currentPlayerScore.score += getColorValue(color); // Add color value to player score
+            updateTotalPoints();
+            updateScore();
+            // console.log(playerScores);
+        }
+
+        function addFoul() {
+            const currentPlayer = players[currentPlayerIndex];
+            const currentPlayerScore = playerScores.find(player => player.id === currentPlayer);
+            const foulValue = parseInt(prompt(`Enter foul value for ${currentPlayer}:`) || 4); // Default foul value to 4 if not provided
+            currentPlayerScore.score -= foulValue; // Subtract foul value from player score
+            updateTotalPoints();
+            updateScore();
+        }
+
+        function addCustomPoint() {
+            const currentPlayer = players[currentPlayerIndex];
+            const currentPlayerScore = playerScores.find(player => player.id === currentPlayer);
+            const scoreValue = parseInt(prompt(`Enter score value for ${currentPlayer}:`) || 0); // Default score value to 4 if not provided
+            currentPlayerScore.score += scoreValue; // Subtract score value from player score
+            updateTotalPoints();
+            updateScore();
+        }
+
+        function getColorValue(color) {
+            const colorValues = {
+                'Red': 1,
+                'Yellow': 2,
+                'Green': 3,
+                'Brown': 4,
+                'Blue': 5,
+                'Pink': 6,
+                'Black': 7
+            };
+            return colorValues[color] || 0; // Return 0 if color not found
+        }
+
+        function passTurn() {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            renderPlayers();
+            updateCurrentPlayerIndicator();
+            updateScore(); // Update score when passing turn
+        }
+
+        function updateTotalPoints() {
+            // Not required as total points are updated separately
+        }
+
+        function updateScore() {
+            playerScores.forEach((player, index) => {
+                const scoreElement = document.querySelector('.players-container').children[index];
+                scoreElement.textContent = `${player.id}: ${player.score}`;
+            });
+        }
+
+        // function customizeOrder() {
+        //     const shootOrderContainer = document.getElementById('shootOrder');
+        //     shootOrderContainer.innerHTML = '';
+        //     players.forEach((player, index) => {
+        //         const label = document.createElement('label');
+        //         label.textContent = `Player ${index + 1}: `;
+        //         const input = document.createElement('input');
+        //         input.type = 'text';
+        //         input.value = player;
+        //         input.onchange = () => {
+        //             players[index] = input.value;
+        //         };
+        //         shootOrderContainer.appendChild(label);
+        //         shootOrderContainer.appendChild(input);
+        //     });
+        // }
+
+        function endGame() {
+            let winner = '';
+            let maxScore = -Infinity;
+            playerScores.forEach(player => {
+                if (player.score > maxScore) {
+                    maxScore = player.score;
+                    winner = player.id;
+                }
+            });
+            alert(`Game ended!\nWinner: ${winner}\nTotal points: ${maxScore}`);
+        }
+
+        function updateCurrentPlayerIndicator() {
+            const indicator = document.getElementById('currentPlayerIndicator');
+            indicator.innerHTML = `Current Player: ${players[currentPlayerIndex]}`;
+        }
+        function addPlayerNamesPrompt() {
+            const numPlayers = event.target.value;
+            players = [];
+            playerScores = []; // Reset player scores
+            for (let i = 0; i < numPlayers; i++) {
+                let playerName = prompt(`Enter name for Player ${i + 1}:`);
+                if (!playerName) {
+                    playerName = `Player ${i + 1}`;
+                }
+                addPlayer(playerName);
+            }
+            updateCurrentPlayerIndicator();
+        }
+
+        document.getElementById('numPlayers').addEventListener('change', (event) => {
+            addPlayerNamesPrompt();
         });
+        document.getElementById('enterPlayersBtn').addEventListener('click', () => {
+           addPlayerNamesPrompt();
+        });
+
+
+        customizeOrder();
+        updateCurrentPlayerIndicator();
     </script>
 </div>
-
-</body>
-</html>
